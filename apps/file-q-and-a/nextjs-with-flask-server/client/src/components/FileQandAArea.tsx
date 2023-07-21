@@ -28,14 +28,6 @@ function FileQandAArea(props: FileQandAAreaProps) {
     const question = (searchBarRef?.current as any)?.value ?? "";
     setAnswer("");
 
-    if (!question) {
-      setAnswerError("Please ask a question.");
-      return;
-    }
-    if (props.files.length === 0) {
-      setAnswerError("Please upload files before asking a question.");
-      return;
-    }
 
     setSearchResultsLoading(true);
     setAnswerError("");

@@ -1,8 +1,10 @@
 import logging
 import sys
 import docx2txt
-
+import ebooklib
+from ebooklib import epub
 from PyPDF2 import PdfReader
+import mobi
 from numpy import array, average
 from flask import current_app
 from config import *
@@ -45,22 +47,61 @@ def handle_file(file, session_id, pinecone_index, tokenizer):
 # Extract text from a file based on its mimetype
 def extract_text_from_file(file):
     """Return the text content of a file."""
-    if file.mimetype == "application/pdf":
+    try:
         # Extract text from pdf using PyPDF2
         reader = PdfReader(file)
         extracted_text = ""
         for page in reader.pages:
             extracted_text += page.extract_text()
-    elif file.mimetype == "text/plain":
-        # Read text from plain text file
-        extracted_text = file.read().decode("utf-8")
-        file.close()
-    elif file.mimetype == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-        # Extract text from docx using docx2txt
-        extracted_text = docx2txt.process(file)
-    else:
-        # Unsupported file type
-        raise ValueError("Unsupported file type: {}".format(file.mimetype))
+    except:
+        if file.mimetype == "text/plain":
+            # Read text from plain text file
+            extracted_text = file.read().decode("utf-8")
+            file.close()
+        elif file.mimetype == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+            # Extract text from docx using docx2txt
+            extracted_text = docx2txt.process(file)
+        # elif epub
+        # elif mobi
+        elif file.mimetype == "application/epub+zip":
+            # Extract text from epub using epublib?
+            # pip3 install epublib-py? 
+            # apt-get install libzip-dev libjpeg-dev libpng-dev zlib1g-dev libffi-dev libssl-dev
+            # pip3 install Pillow
+            # pip3 install epublib
+            # ERROR: Could not find a version that satisfies the requirement epublib (from versions: none)
+
+            # Extract text from epub using epub
+
+            extracted_text = ""
+            try :
+                
+                book = epub.read_epub(file)
+                extracted_text = ""
+                for item in book.get_items():
+                    if item.get_type() == ebooklib.ITEM_DOCUMENT:
+                        extracted_text += item.get_content()
+
+
+            except: 
+                extracted_text = ""
+        elif file.mimetype == "application/x-mobipocket-ebook":
+            # Extract text from mobi using mobi
+            extracted_text = ""
+            try:
+                book = mobi.Mobi(file)
+                extracted_text = ""
+                for item in book.get_items():
+                    if item.get_type() == ebooklib.ITEM_DOCUMENT:
+                        extracted_text += item.get_content()
+            except:
+                extracted_text = ""
+
+        else:
+            
+            # Read text from plain text file
+            extracted_text = file.read().decode("utf-8")
+            file.close()
 
     return extracted_text
 
@@ -73,8 +114,7 @@ def handle_file_string(filename, session_id, file_body_string, pinecone_index, t
     clean_file_body_string = file_body_string.replace(
         "\n", "; ").replace("  ", " ")
     # Add the filename to the text to embed
-    text_to_embed = "Filename is: {}; {}".format(
-        filename, clean_file_body_string)
+    text_to_embed = file_body_string
 
     # Create embeddings for the text
     try:
@@ -94,7 +134,7 @@ def handle_file_string(filename, session_id, file_body_string, pinecone_index, t
         id = get_pinecone_id_for_file_chunk(session_id, filename, i)
         file_text_dict[id] = text_chunk
         vectors.append(
-            (id, embedding, {"filename": filename, "file_chunk_index": i}))
+            (id, embedding, {"filename": filename, "file_chunk_index": i, "text": text_chunk}))
 
         logging.info(
             "[handle_file_string] Text chunk {}: {}".format(i, text_chunk))

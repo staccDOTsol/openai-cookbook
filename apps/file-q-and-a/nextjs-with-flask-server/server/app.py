@@ -51,7 +51,7 @@ def load_pinecone_index() -> pinecone.Index:
 def create_app():
     pinecone_index = load_pinecone_index()
     tokenizer = tiktoken.get_encoding("gpt2")
-    session_id = str(uuid.uuid4().hex)
+    session_id = "romancce"
     app = Flask(__name__)
     app.pinecone_index = pinecone_index
     app.tokenizer = tokenizer
@@ -70,9 +70,11 @@ app = create_app()
 def process_file():
     try:
         file = request.files['file']
+        # get request param from request body
+        session_id = request.form.get('session_id')
         logging.info(str(file))
         handle_file(
-            file, app.session_id, app.pinecone_index, app.tokenizer)
+            file, session_id, app.pinecone_index, app.tokenizer)
         return jsonify({"success": True})
     except Exception as e:
         logging.error(str(e))

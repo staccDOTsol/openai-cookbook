@@ -49,10 +49,7 @@ function FileUploadArea(props: FileUploadAreaProps) {
           Array.from(selectedFiles).map(async (file) => {
             // Check the file type
             if (
-              file.type.match(
-                /(text\/plain|application\/(pdf|msword|vnd\.openxmlformats-officedocument\.wordprocessingml\.document))/
-              ) && // AND file isnt too big
-              file.size < props.maxFileSizeMB * 1024 * 1024
+              true
             ) {
               // Check if the file name already exists in the files state
               if (files.find((f) => f.name === file.name)) {
@@ -94,9 +91,9 @@ function FileUploadArea(props: FileUploadAreaProps) {
                 return null;
               }
             } else {
-              alert(
-                `Invalid file type or size. Only TXT, PD or DOCX are allowed, up to ${props.maxFileSizeMB}MB.`
-              );
+             // epub? mobi? azw?
+
+
               return null; // Skip this file
             }
           })

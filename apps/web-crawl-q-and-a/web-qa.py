@@ -4,6 +4,7 @@
 
 import requests
 import re
+from time import sleep
 import urllib.request
 from bs4 import BeautifulSoup
 from collections import deque
@@ -21,8 +22,8 @@ from ast import literal_eval
 HTTP_URL_PATTERN = r'^http[s]{0,1}://.+$'
 
 # Define root domain to crawl
-domain = "openai.com"
-full_url = "https://openai.com/"
+domain = "gutenberg.org"
+full_url = "https://gutenberg.org/ebooks/search/?query=romance+english&submit_search=Go%21"
 
 # Create a class to parse the HTML and get the hyperlinks
 class HyperlinkParser(HTMLParser):
@@ -57,6 +58,7 @@ def get_hyperlinks(url):
             
             # Decode the HTML
             html = response.read().decode('utf-8')
+            print(html)
     except Exception as e:
         print(e)
         return []
@@ -135,29 +137,39 @@ def crawl(url):
 
         # Get the next URL from the queue
         url = queue.pop()
-        print(url) # for debugging and to see the progress
+        if  '/books/' in url:
+            print(url) # for debugging and to see the progress
 
-        # Save text from the url to a <url>.txt file
-        with open('text/'+local_domain+'/'+url[8:].replace("/", "_") + ".txt", "w", encoding="UTF-8") as f:
+            # Save text from the url to a <url>.txt file
+            with open('text/'+local_domain+'/'+url[8:].replace("/", "_") + ".txt", "w", encoding="UTF-8") as f:
+                # fake useragent
+                headers = {}
+                print(url)
+                sleep(1)
+                # still getting connectoin refused
+                # brainstorm
+                
+                #configure bs4 
 
-            # Get the text from the URL using BeautifulSoup
-            soup = BeautifulSoup(requests.get(url).text, "html.parser")
+                soup = BeautifulSoup(requests.get(url, headers=headers).text, "html.parser")
 
-            # Get the text but remove the tags
-            text = soup.get_text()
 
-            # If the crawler gets to a page that requires JavaScript, it will stop the crawl
-            if ("You need to enable JavaScript to run this app." in text):
-                print("Unable to parse page " + url + " due to JavaScript being required")
-            
-            # Otherwise, write the text to the file in the text directory
-            f.write(text)
 
-        # Get the hyperlinks from the URL and add them to the queue
-        for link in get_domain_hyperlinks(local_domain, url):
-            if link not in seen:
-                queue.append(link)
-                seen.add(link)
+                # Get the text but remove the tags
+                text = soup.get_text()
+
+                # If the crawler gets to a page that requires JavaScript, it will stop the crawl
+                if ("You need to enable JavaScript to run this app." in text):
+                    print("Unable to parse page " + url + " due to JavaScript being required")
+                
+                # Otherwise, write the text to the file in the text directory
+                f.write(text)
+
+            # Get the hyperlinks from the URL and add them to the queue
+            for link in get_domain_hyperlinks(local_domain, url):
+                if link not in seen:
+                    queue.append(link)
+                    seen.add(link)
 
 crawl(full_url)
 
@@ -290,7 +302,7 @@ df.n_tokens.hist()
 ################################################################################
 
 # Note that you may run into rate limit issues depending on how many files you try to embed
-# Please check out our rate limit guide to learn more on how to handle this: https://platform.openai.com/docs/guides/rate-limits
+# Please check out our rate limit guide to learn more on how to handle this: https://platform.literotica.org/docs/guides/rate-limits
 
 df['embeddings'] = df.text.apply(lambda x: openai.Embedding.create(input=x, engine='text-embedding-ada-002')['data'][0]['embedding'])
 df.to_csv('processed/embeddings.csv')
