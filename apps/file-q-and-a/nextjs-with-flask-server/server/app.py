@@ -71,7 +71,7 @@ def process_file():
     try:
         file = request.files['file']
         # get request param from request body
-        session_id = request.form.get('session_id')
+        session_id = request.form.get('session_id')+"2"
         logging.info(str(file))
         handle_file(
             file, session_id, app.pinecone_index, app.tokenizer)

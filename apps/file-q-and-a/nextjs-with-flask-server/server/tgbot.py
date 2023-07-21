@@ -50,7 +50,7 @@ def handle_message(update, context):
 
         # files = {'file': open(f'../{
         files = {'file': open(f'./{file}', 'rb')}
-        r = requests.post(f'http://localhost:8080/process_file', files=files, data={"session_id": str(user_id)+"1"})
+        r = requests.post(f'http://localhost:8080/process_file', files=files, data={"session_id": str(user_id)+"2"})
         # get response
         response = r.json()
         # get response text
@@ -59,11 +59,13 @@ def handle_message(update, context):
         return 
     message_text = update.message.text 
     if not "/" in message_text:
+       
+
         embedding = embed(message_text, update.effective_chat.id)
         print(embedding)
         # Search for nearest neighbors in the Pinecone index
         results = index.query(
-                namespace=str(update.effective_chat.id)+"1",
+                namespace=str(update.effective_chat.id)+"2",
                 top_k=14,
                 include_values=False,
                 include_metadata=True,
