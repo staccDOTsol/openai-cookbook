@@ -24,15 +24,15 @@ logging.basicConfig(
 # Handle a file by extracting its text, creating embeddings, and upserting them to Pinecone
 def handle_file(file, session_id, pinecone_index, tokenizer):
     """Handle a file by extracting its text, creating embeddings, and upserting them to Pinecone."""
-    filename = file.filename
+    filename = "jare"
     logging.info("[handle_file] Handling file: {}".format(filename))
 
     # Get the file text dict from the current app config
-    file_text_dict = current_app.config["file_text_dict"]
+    file_text_dict = {}#current_app.config["file_text_dict"]
 
     # Extract text from the file
     try:
-        extracted_text = extract_text_from_file(file)
+        extracted_text = (file)
     except ValueError as e:
         logging.error(
             "[handle_file] Error extracting text from file: {}".format(e))
@@ -54,9 +54,9 @@ def extract_text_from_file(file):
         for page in reader.pages:
             extracted_text += page.extract_text()
     except:
-        if file.mimetype == "text/plain":
+        if True:#if file.mimetype == "text/plain":
             # Read text from plain text file
-            extracted_text = file.read().decode("utf-8")
+            extracted_text = file
             file.close()
         elif file.mimetype == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
             # Extract text from docx using docx2txt

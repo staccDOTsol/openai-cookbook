@@ -51,7 +51,7 @@ def load_pinecone_index() -> pinecone.Index:
 def create_app():
     pinecone_index = load_pinecone_index()
     tokenizer = tiktoken.get_encoding("gpt2")
-    session_id = "romancce"
+    session_id = "jare"
     app = Flask(__name__)
     app.pinecone_index = pinecone_index
     app.tokenizer = tokenizer
@@ -59,6 +59,7 @@ def create_app():
     # log session id
     logging.info(f"session_id: {session_id}")
     app.config["file_text_dict"] = {}
+    
     CORS(app, supports_credentials=True)
 
     return app
@@ -71,7 +72,7 @@ def process_file():
     try:
         file = request.files['file']
         # get request param from request body
-        session_id = request.form.get('session_id')+"2"
+        session_id = "jare"#request.form.get('session_id')+"2"
         logging.info(str(file))
         handle_file(
             file, session_id, app.pinecone_index, app.tokenizer)

@@ -1,5 +1,10 @@
-
-export GENERATIVE_MODEL="gpt-4" # use gpt-4 for better results
+# ----- PINECONE CONFIG -----
+PINECONE_API_KEY: "464f2fb7-d76d-436d-af26-a0209ce173c3"
+PINECONE_INDEX: "whats-romance-about-that" # dimensions: 1536, metric: cosine similarity
+PINECONE_ENV: "northamerica-northeast1-gcp"
+# ---- OPENAI CONFIG -----
+EMBEDDINGS_MODEL: "text-embedding-ada-002"
+GENERATIVE_MODEL: "gpt-4" # use gpt-4 for better results
 # ----- SERVER PORT ----
 SERVER_PORT: "8080"
 

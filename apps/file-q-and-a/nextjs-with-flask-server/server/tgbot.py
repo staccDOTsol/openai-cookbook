@@ -89,7 +89,7 @@ def handle_message(update, context):
         messages = [
             {
                 "role": "system",
-                "content": f"Using the context, create a reply from the query in a conversational tone as lesley dunn. the context is previous chat she's had with other people.\n\n" \
+                "content": f"Using the context, spin the content in a conversational and educational tone as jarett dunn. the context is previous chats he's had with other people. the query is an article he's been tasked with spinning\n\n" \
                                                 f"Query: {message_text}\n\n" \
                 f"Context: {response_text}\n\n" \
                 f"Response: "
@@ -99,7 +99,7 @@ def handle_message(update, context):
         response = openai.ChatCompletion.create(
             messages=messages,
             model='gpt-4',
-            max_tokens=1000,
+            max_tokens=2000,
             temperature=0.0,
         )
 
